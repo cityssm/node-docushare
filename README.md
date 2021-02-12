@@ -1,2 +1,2 @@
 # node-docushare
-A DcouShare API for NodeJS
+A DocuShare API for NodeJS
