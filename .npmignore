@@ -12,3 +12,8 @@ test
 .npmignore
 appveyor.yml
 tsconfig.json
+
+java/.classpath
+java/.project
+java/lib/dsapi/dsapi.jar
+java/src
