@@ -74,7 +74,7 @@ export const findByHandle = async (handleString: string): Promise<types.DocuShar
   const java = new JavaCaller({
     rootPath: JAVA_ROOTPATH,
     classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-    mainClass: "cityssm.nodeDocuShareJava.FindByHandle",
+    mainClass: "cityssm.nodedocusharejava.FindByHandle",
     minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
   });
 
@@ -108,7 +108,7 @@ export const createCollection = async (parentCollectionHandleString: string, col
   const java = new JavaCaller({
     rootPath: JAVA_ROOTPATH,
     classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-    mainClass: "cityssm.nodeDocuShareJava.CreateCollection",
+    mainClass: "cityssm.nodedocusharejava.CreateCollection",
     minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
   });
 

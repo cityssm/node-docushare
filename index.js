@@ -51,7 +51,7 @@ const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, functio
     const java = new java_caller_1.JavaCaller({
         rootPath: JAVA_ROOTPATH,
         classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-        mainClass: "cityssm.nodeDocuShareJava.FindByHandle",
+        mainClass: "cityssm.nodedocusharejava.FindByHandle",
         minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
     });
     const { status, stdout, stderr } = yield java.run([
@@ -79,7 +79,7 @@ const createCollection = (parentCollectionHandleString, collectionTitle) => __aw
     const java = new java_caller_1.JavaCaller({
         rootPath: JAVA_ROOTPATH,
         classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-        mainClass: "cityssm.nodeDocuShareJava.CreateCollection",
+        mainClass: "cityssm.nodedocusharejava.CreateCollection",
         minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
     });
     const { status, stdout, stderr } = yield java.run([

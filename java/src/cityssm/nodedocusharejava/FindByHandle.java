@@ -1,4 +1,4 @@
-package cityssm.nodeDocuShareJava;
+package cityssm.nodedocusharejava;
 
 import org.json.JSONObject;
 
