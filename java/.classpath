@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/dsapi/dsapi.jar"/>
+	<classpathentry kind="lib" path="lib/dsJQuery/dsJQuery-20210212.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/jdom-1.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/json/json-20201115.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

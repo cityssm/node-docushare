@@ -1,5 +1,6 @@
 .nyc_output/
 node_modules/
 
-java/dsapi.jar
-java/jdom-*.jar
+test/config.*
+
+dsapi.jar
