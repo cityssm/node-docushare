@@ -21,6 +21,9 @@ export interface DocuShareObject {
     description: string;
     keywords: string;
     createDate: string;
+    createDateMillis: number;
     modifiedDate: string;
+    modifiedDateMillis: number;
     expirationDate?: string;
+    expirationDateMillis?: number;
 }
