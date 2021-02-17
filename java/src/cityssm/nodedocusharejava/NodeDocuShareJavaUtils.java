@@ -25,9 +25,21 @@ public class NodeDocuShareJavaUtils {
 			jsonObj.put("summary", dsObj.getSummary());
 			jsonObj.put("description", dsObj.getDescription());
 			jsonObj.put("keywords", dsObj.getKeywords());
+			
 			jsonObj.put("createDate", dsObj.getCreateDate());
+			if (dsObj.getCreateDate() != null) {
+				jsonObj.put("createDateMillis", dsObj.getCreateDate().getTime());
+			}
+			
 			jsonObj.put("modifiedDate", dsObj.getModifiedDate());
+			if (dsObj.getModifiedDate() != null) {
+				jsonObj.put("modifiedDateMillis", dsObj.getModifiedDate().getTime());
+			}
+			
 			jsonObj.put("expirationDate", dsObj.getExpirationDate());
+			if (dsObj.getExpirationDate() != null) {
+				jsonObj.put("expirationDateMillis", dsObj.getExpirationDate().getTime());
+			}
 			
 			jsonArr.put(jsonObj);
 		}
