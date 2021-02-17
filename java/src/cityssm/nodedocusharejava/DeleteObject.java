@@ -1,5 +1,6 @@
 package cityssm.nodedocusharejava;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.xerox.docushare.DSException;
@@ -8,7 +9,7 @@ import ca.saultstemarie.dsjquery.DSJQuery;
 import ca.saultstemarie.dsjquery.DSJQueryException;
 import ca.saultstemarie.dsjquery.DSJQuerySessionHandler;
 
-public class CreateCollection {
+public class DeleteObject {
 
 	public static void main (String[] args) throws NumberFormatException, DSJQueryException, DSException, InterruptedException {
 		
@@ -18,12 +19,17 @@ public class CreateCollection {
 			
 			DSJQuery ds = new DSJQuery("#" + args[5]);
 			
-			ds = ds.insertCollectionAndGet(args[6]);
+			boolean success = false;
+			
+			if (ds.length() == 1) {
+				ds.remove();
+				success = true;
+			}
 			
 			JSONObject json = new JSONObject();
-			
-			json.put("success", true);
-			json.put("dsObjects", NodeDocuShareJavaUtils.dsJQueryToJSONArray(ds));
+						
+			json.put("success", success);
+			json.put("dsObjects", new JSONArray());
 			
 			System.out.print(json.toString());
 		}

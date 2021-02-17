@@ -12,6 +12,7 @@ export interface SessionConfig {
 }
 export declare type DocuShareObjectClass = "Collection" | "Document";
 export interface DocuShareOutput {
+    success: boolean;
     dsObjects: DocuShareObject[];
 }
 export interface DocuShareObject {

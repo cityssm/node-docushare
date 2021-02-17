@@ -16,6 +16,7 @@ export interface SessionConfig {
 export type DocuShareObjectClass = "Collection" | "Document";
 
 export interface DocuShareOutput {
+  success: boolean;
   dsObjects: DocuShareObject[];
 };
 

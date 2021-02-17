@@ -22,6 +22,7 @@ public class SetTitle {
 
 			JSONObject json = new JSONObject();
 			
+			json.put("success", true);
 			json.put("dsObjects", NodeDocuShareJavaUtils.dsJQueryToJSONArray(ds));
 			
 			System.out.print(json.toString());

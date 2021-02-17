@@ -63,10 +63,10 @@ const buildCallerOptions = (mainClass: string) => {
 const buildArguments = (methodArgs: string[]): string[] => {
 
   const args = [serverConfig.serverName,
-    serverConfig.serverPort.toString(),
-    sessionConfig.userDomain,
-    sessionConfig.userName,
-    sessionConfig.password];
+  serverConfig.serverPort.toString(),
+  sessionConfig.userDomain,
+  sessionConfig.userName,
+  sessionConfig.password];
 
   for (const methodArg of methodArgs) {
 
@@ -80,25 +80,41 @@ const buildArguments = (methodArgs: string[]): string[] => {
   return args;
 };
 
-const prepareSingleDocuShareObjectOutput = (status: number, stdout: string, stderr: string) => {
+const parseOutput = (status: number, stdout: string, stderr: string): types.DocuShareOutput => {
 
   if (status === 0) {
-    const dsOutput = JSON.parse(stdout.trim()) as types.DocuShareOutput;
-
-    if (dsOutput.dsObjects.length > 0) {
-      return dsOutput.dsObjects[0];
-    } else {
-      return false;
-    }
+    return JSON.parse(stdout.trim()) as types.DocuShareOutput;
 
   } else {
     throw new Error(stderr);
   }
 };
 
+const prepareSingleDocuShareObjectOutput = (status: number, stdout: string, stderr: string) => {
+
+  const dsOutput = parseOutput(status, stdout, stderr);
+
+  if (dsOutput.dsObjects.length > 0) {
+    return dsOutput.dsObjects[0];
+  } else {
+    return false;
+  }
+};
+
+const prepareMultipleDocuShareObjectsOutput = (status: number, stdout: string, stderr: string) => {
+
+  const dsOutput = parseOutput(status, stdout, stderr);
+
+  if (dsOutput.dsObjects.length > 0) {
+    return dsOutput.dsObjects;
+  } else {
+    return false;
+  }
+};
+
 
 /*
- * Find
+ * Read
  */
 
 
@@ -119,6 +135,21 @@ export const findByHandle = async (handleString: string): Promise<types.DocuShar
 
 export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number) => {
   return await findByHandle(objectClass + "-" + objectID.toString());
+};
+
+export const getChildren = async (parentCollectionHandleString: string): Promise<types.DocuShareObject[] | false> => {
+
+  const java = new JavaCaller(
+    buildCallerOptions("cityssm.nodedocusharejava.GetChildren")
+  );
+
+  const { status, stdout, stderr } = await java.run(
+    buildArguments([
+      parentCollectionHandleString
+    ])
+  );
+
+  return prepareMultipleDocuShareObjectsOutput(status, stdout, stderr);
 };
 
 
@@ -163,4 +194,26 @@ export const setTitle = async (handleString: string, title: string) => {
   );
 
   return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
+};
+
+
+/*
+ * Delete
+ */
+
+export const deleteObject = async (handleString: string) => {
+
+  const java = new JavaCaller(
+    buildCallerOptions("cityssm.nodedocusharejava.DeleteObject")
+  );
+
+  const { status, stdout, stderr } = await java.run(
+    buildArguments([
+      handleString
+    ])
+  );
+
+  const dsOutput = parseOutput(status, stdout, stderr);
+
+  return dsOutput.success;
 };

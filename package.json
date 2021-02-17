@@ -1,11 +1,13 @@
 {
   "name": "@cityssm/docushare",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A DocuShare API for NodeJS",
   "main": "index.js",
   "scripts": {
     "test": "node ./test/findByHandle.js",
-    "test:setTitle": "node ./test/setTitle.js"
+    "test:getChildren": "node ./test/getChildren.js",
+    "test:setTitle": "node ./test/setTitle.js",
+    "test:deleteObject": "node ./test/deleteObject.js"
   },
   "repository": {
     "type": "git",

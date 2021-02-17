@@ -8,7 +8,7 @@ import ca.saultstemarie.dsjquery.DSJQuery;
 import ca.saultstemarie.dsjquery.DSJQueryException;
 import ca.saultstemarie.dsjquery.DSJQuerySessionHandler;
 
-public class CreateCollection {
+public class GetChildren {
 
 	public static void main (String[] args) throws NumberFormatException, DSJQueryException, DSException, InterruptedException {
 		
@@ -17,11 +17,11 @@ public class CreateCollection {
 			DSJQuerySessionHandler.sessionSetup(args[2], args[3], args[4]);
 			
 			DSJQuery ds = new DSJQuery("#" + args[5]);
-			
-			ds = ds.insertCollectionAndGet(args[6]);
+
+			ds = ds.children();
 			
 			JSONObject json = new JSONObject();
-			
+						
 			json.put("success", true);
 			json.put("dsObjects", NodeDocuShareJavaUtils.dsJQueryToJSONArray(ds));
 			

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setTitle = exports.createCollection = exports.findByObjectClassAndID = exports.findByHandle = exports.setupSession = exports.setupServer = exports.setupJava = void 0;
+exports.deleteObject = exports.setTitle = exports.createCollection = exports.getChildren = exports.findByObjectClassAndID = exports.findByHandle = exports.setupSession = exports.setupServer = exports.setupJava = void 0;
 const java_caller_1 = require("java-caller");
 const defaults = require("./defaults");
 let javaConfig = {
@@ -62,18 +62,30 @@ const buildArguments = (methodArgs) => {
     }
     return args;
 };
-const prepareSingleDocuShareObjectOutput = (status, stdout, stderr) => {
+const parseOutput = (status, stdout, stderr) => {
     if (status === 0) {
-        const dsOutput = JSON.parse(stdout.trim());
-        if (dsOutput.dsObjects.length > 0) {
-            return dsOutput.dsObjects[0];
-        }
-        else {
-            return false;
-        }
+        return JSON.parse(stdout.trim());
     }
     else {
         throw new Error(stderr);
+    }
+};
+const prepareSingleDocuShareObjectOutput = (status, stdout, stderr) => {
+    const dsOutput = parseOutput(status, stdout, stderr);
+    if (dsOutput.dsObjects.length > 0) {
+        return dsOutput.dsObjects[0];
+    }
+    else {
+        return false;
+    }
+};
+const prepareMultipleDocuShareObjectsOutput = (status, stdout, stderr) => {
+    const dsOutput = parseOutput(status, stdout, stderr);
+    if (dsOutput.dsObjects.length > 0) {
+        return dsOutput.dsObjects;
+    }
+    else {
+        return false;
     }
 };
 const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
@@ -88,6 +100,14 @@ const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void
     return yield exports.findByHandle(objectClass + "-" + objectID.toString());
 });
 exports.findByObjectClassAndID = findByObjectClassAndID;
+const getChildren = (parentCollectionHandleString) => __awaiter(void 0, void 0, void 0, function* () {
+    const java = new java_caller_1.JavaCaller(buildCallerOptions("cityssm.nodedocusharejava.GetChildren"));
+    const { status, stdout, stderr } = yield java.run(buildArguments([
+        parentCollectionHandleString
+    ]));
+    return prepareMultipleDocuShareObjectsOutput(status, stdout, stderr);
+});
+exports.getChildren = getChildren;
 const createCollection = (parentCollectionHandleString, collectionTitle) => __awaiter(void 0, void 0, void 0, function* () {
     const java = new java_caller_1.JavaCaller(buildCallerOptions("cityssm.nodedocusharejava.CreateCollection"));
     const { status, stdout, stderr } = yield java.run(buildArguments([
@@ -106,3 +126,12 @@ const setTitle = (handleString, title) => __awaiter(void 0, void 0, void 0, func
     return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
 });
 exports.setTitle = setTitle;
+const deleteObject = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
+    const java = new java_caller_1.JavaCaller(buildCallerOptions("cityssm.nodedocusharejava.DeleteObject"));
+    const { status, stdout, stderr } = yield java.run(buildArguments([
+        handleString
+    ]));
+    const dsOutput = parseOutput(status, stdout, stderr);
+    return dsOutput.success;
+});
+exports.deleteObject = deleteObject;
