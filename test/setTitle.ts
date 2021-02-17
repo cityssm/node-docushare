@@ -1,7 +1,7 @@
 import { config } from "./config";
 import * as ds from "../index";
 
-async function createCollection() {
+async function setTitle() {
   ds.setupServer({
     serverName: config.serverName
   });
@@ -11,11 +11,11 @@ async function createCollection() {
     password: config.password
   });
 
-  return await ds.createCollection("Collection-400", "! Testing Testing");
+  return await ds.setTitle("Collection-405", "Aldo's Shipping and Freight");
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async() => {
-  const dsObject = await createCollection();
+  const dsObject = await setTitle();
   console.log(dsObject);
 })();

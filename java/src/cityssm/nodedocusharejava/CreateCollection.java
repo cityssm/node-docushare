@@ -22,7 +22,7 @@ public class CreateCollection {
 			
 			JSONObject json = new JSONObject();
 			
-			json.put("dsObjects", Tools.dsJQueryToJSONArray(ds));
+			json.put("dsObjects", NodeDocuShareJavaUtils.dsJQueryToJSONArray(ds));
 			
 			System.out.print(json.toString());
 		}

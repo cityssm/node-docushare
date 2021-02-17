@@ -14,6 +14,7 @@ async function findByHandle() {
   return await ds.findByHandle("Collection-400");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async() => {
   const dsObject = await findByHandle();
   console.log(dsObject);

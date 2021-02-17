@@ -1,91 +1,86 @@
 import { JavaCaller } from "java-caller";
 
-import * as path from "path";
+import * as defaults from "./defaults";
 
 import type * as types from "./types";
 
-/*
- * Java Options
- */
-
-const JAVA_ROOTPATH = __dirname;
-
-const JAVA_CLASSPATH =
-  path.join("java", "bin") + ":" +
-  path.join("java", "lib", "dsJQuery", "dsJQuery-20210212.jar") + ":" +
-  path.join("java", "lib", "jdom", "jdom-1.1.3.jar") + ":" +
-  path.join("java", "lib", "json", "json-20201115.jar");
-
-const JAVA_MINIMUMJAVAVERSION = 12;
 
 /*
- * Java Setup
+ * Setup
  */
 
-const DEFAULT_DSAPI_PATH = path.join("java", "lib", "dsapi", "dsapi.jar");
+// Java
 
 let javaConfig: types.JavaConfig = {
-  dsapiPath: DEFAULT_DSAPI_PATH
+  dsapiPath: defaults.DSAPI_PATH
 };
 
 export const setupJava = (config: types.JavaConfig) => {
   javaConfig = config;
   if (!javaConfig.hasOwnProperty("dsapiPath")) {
-    javaConfig.dsapiPath = DEFAULT_DSAPI_PATH;
+    javaConfig.dsapiPath = defaults.DSAPI_PATH;
   }
 };
 
-/*
- * Server Setup
- */
-
-const DEFAULT_SERVER_PORT = 1099;
+// Server
 
 let serverConfig: types.ServerConfig;
 
 export const setupServer = (config: types.ServerConfig) => {
   serverConfig = config;
   if (!serverConfig.hasOwnProperty("serverPort")) {
-    serverConfig.serverPort = DEFAULT_SERVER_PORT;
+    serverConfig.serverPort = defaults.SERVER_PORT;
   }
 };
 
-/*
- * Session Setup
- */
-
-const DEFAULT_USER_DOMAIN = "DocuShare";
+// Session
 
 let sessionConfig: types.SessionConfig;
 
 export const setupSession = (config: types.SessionConfig) => {
   sessionConfig = config;
   if (!sessionConfig.hasOwnProperty("userDomain")) {
-    sessionConfig.userDomain = DEFAULT_USER_DOMAIN;
+    sessionConfig.userDomain = defaults.USER_DOMAIN;
   }
 };
 
+
 /*
- * Find
+ * Helpers
  */
 
-export const findByHandle = async (handleString: string): Promise<types.DocuShareObject | false> => {
 
-  const java = new JavaCaller({
-    rootPath: JAVA_ROOTPATH,
-    classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-    mainClass: "cityssm.nodedocusharejava.FindByHandle",
-    minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
-  });
+const buildCallerOptions = (mainClass: string) => {
 
-  const { status, stdout, stderr } = await java.run([
-    serverConfig.serverName,
+  return {
+    rootPath: defaults.JAVA_ROOTPATH,
+    classPath: `${defaults.JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
+    mainClass,
+    minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
+  };
+};
+
+const buildArguments = (methodArgs: string[]): string[] => {
+
+  const args = [serverConfig.serverName,
     serverConfig.serverPort.toString(),
     sessionConfig.userDomain,
     sessionConfig.userName,
-    sessionConfig.password,
-    handleString
-  ]);
+    sessionConfig.password];
+
+  for (const methodArg of methodArgs) {
+
+    if (methodArg.includes(" ")) {
+      args.push("\"" + methodArg + "\"");
+    } else {
+      args.push(methodArg);
+    }
+  }
+
+  return args;
+};
+
+const prepareSingleDocuShareObjectOutput = (status: number, stdout: string, stderr: string) => {
 
   if (status === 0) {
     const dsOutput = JSON.parse(stdout.trim()) as types.DocuShareOutput;
@@ -99,45 +94,73 @@ export const findByHandle = async (handleString: string): Promise<types.DocuShar
   } else {
     throw new Error(stderr);
   }
+};
+
+
+/*
+ * Find
+ */
+
+
+export const findByHandle = async (handleString: string): Promise<types.DocuShareObject | false> => {
+
+  const java = new JavaCaller(
+    buildCallerOptions("cityssm.nodedocusharejava.FindByHandle")
+  );
+
+  const { status, stdout, stderr } = await java.run(
+    buildArguments([
+      handleString
+    ])
+  );
+
+  return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
 };
 
 export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number) => {
   return await findByHandle(objectClass + "-" + objectID.toString());
 };
 
+
 /*
- * Create Collection
+ * Create
  */
+
 
 export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareObject | false> => {
 
-  const java = new JavaCaller({
-    rootPath: JAVA_ROOTPATH,
-    classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-    mainClass: "cityssm.nodedocusharejava.CreateCollection",
-    minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
-  });
+  const java = new JavaCaller(
+    buildCallerOptions("cityssm.nodedocusharejava.CreateCollection")
+  );
 
-  const { status, stdout, stderr } = await java.run([
-    serverConfig.serverName,
-    serverConfig.serverPort.toString(),
-    sessionConfig.userDomain,
-    sessionConfig.userName,
-    sessionConfig.password,
-    parentCollectionHandleString,
-    "\"" + collectionTitle + "\""
-  ]);
+  const { status, stdout, stderr } = await java.run(
+    buildArguments([
+      parentCollectionHandleString,
+      collectionTitle
+    ])
+  );
 
-  if (status === 0) {
-    const dsOutput = JSON.parse(stdout.trim()) as types.DocuShareOutput;
+  return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
+};
 
-    if (dsOutput.dsObjects.length > 0) {
-      return dsOutput.dsObjects[0];
-    } else {
-      return false;
-    }
 
-  } else {
-    throw new Error(stderr);
-  }
+/*
+ * Update
+ */
+
+
+export const setTitle = async (handleString: string, title: string) => {
+
+  const java = new JavaCaller(
+    buildCallerOptions("cityssm.nodedocusharejava.SetTitle")
+  );
+
+  const { status, stdout, stderr } = await java.run(
+    buildArguments([
+      handleString,
+      title
+    ])
+  );
+
+  return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
 };

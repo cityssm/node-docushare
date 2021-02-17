@@ -9,59 +9,60 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCollection = exports.findByObjectClassAndID = exports.findByHandle = exports.setupSession = exports.setupServer = exports.setupJava = void 0;
+exports.setTitle = exports.createCollection = exports.findByObjectClassAndID = exports.findByHandle = exports.setupSession = exports.setupServer = exports.setupJava = void 0;
 const java_caller_1 = require("java-caller");
-const path = require("path");
-const JAVA_ROOTPATH = __dirname;
-const JAVA_CLASSPATH = path.join("java", "bin") + ":" +
-    path.join("java", "lib", "dsJQuery", "dsJQuery-20210212.jar") + ":" +
-    path.join("java", "lib", "jdom", "jdom-1.1.3.jar") + ":" +
-    path.join("java", "lib", "json", "json-20201115.jar");
-const JAVA_MINIMUMJAVAVERSION = 12;
-const DEFAULT_DSAPI_PATH = path.join("java", "lib", "dsapi", "dsapi.jar");
+const defaults = require("./defaults");
 let javaConfig = {
-    dsapiPath: DEFAULT_DSAPI_PATH
+    dsapiPath: defaults.DSAPI_PATH
 };
 const setupJava = (config) => {
     javaConfig = config;
     if (!javaConfig.hasOwnProperty("dsapiPath")) {
-        javaConfig.dsapiPath = DEFAULT_DSAPI_PATH;
+        javaConfig.dsapiPath = defaults.DSAPI_PATH;
     }
 };
 exports.setupJava = setupJava;
-const DEFAULT_SERVER_PORT = 1099;
 let serverConfig;
 const setupServer = (config) => {
     serverConfig = config;
     if (!serverConfig.hasOwnProperty("serverPort")) {
-        serverConfig.serverPort = DEFAULT_SERVER_PORT;
+        serverConfig.serverPort = defaults.SERVER_PORT;
     }
 };
 exports.setupServer = setupServer;
-const DEFAULT_USER_DOMAIN = "DocuShare";
 let sessionConfig;
 const setupSession = (config) => {
     sessionConfig = config;
     if (!sessionConfig.hasOwnProperty("userDomain")) {
-        sessionConfig.userDomain = DEFAULT_USER_DOMAIN;
+        sessionConfig.userDomain = defaults.USER_DOMAIN;
     }
 };
 exports.setupSession = setupSession;
-const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
-    const java = new java_caller_1.JavaCaller({
-        rootPath: JAVA_ROOTPATH,
-        classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-        mainClass: "cityssm.nodedocusharejava.FindByHandle",
-        minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
-    });
-    const { status, stdout, stderr } = yield java.run([
-        serverConfig.serverName,
+const buildCallerOptions = (mainClass) => {
+    return {
+        rootPath: defaults.JAVA_ROOTPATH,
+        classPath: `${defaults.JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
+        mainClass,
+        minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
+    };
+};
+const buildArguments = (methodArgs) => {
+    const args = [serverConfig.serverName,
         serverConfig.serverPort.toString(),
         sessionConfig.userDomain,
         sessionConfig.userName,
-        sessionConfig.password,
-        handleString
-    ]);
+        sessionConfig.password];
+    for (const methodArg of methodArgs) {
+        if (methodArg.includes(" ")) {
+            args.push("\"" + methodArg + "\"");
+        }
+        else {
+            args.push(methodArg);
+        }
+    }
+    return args;
+};
+const prepareSingleDocuShareObjectOutput = (status, stdout, stderr) => {
     if (status === 0) {
         const dsOutput = JSON.parse(stdout.trim());
         if (dsOutput.dsObjects.length > 0) {
@@ -74,6 +75,13 @@ const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, functio
     else {
         throw new Error(stderr);
     }
+};
+const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
+    const java = new java_caller_1.JavaCaller(buildCallerOptions("cityssm.nodedocusharejava.FindByHandle"));
+    const { status, stdout, stderr } = yield java.run(buildArguments([
+        handleString
+    ]));
+    return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
 });
 exports.findByHandle = findByHandle;
 const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void 0, void 0, function* () {
@@ -81,32 +89,20 @@ const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void
 });
 exports.findByObjectClassAndID = findByObjectClassAndID;
 const createCollection = (parentCollectionHandleString, collectionTitle) => __awaiter(void 0, void 0, void 0, function* () {
-    const java = new java_caller_1.JavaCaller({
-        rootPath: JAVA_ROOTPATH,
-        classPath: `${JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
-        mainClass: "cityssm.nodedocusharejava.CreateCollection",
-        minimumJavaVersion: JAVA_MINIMUMJAVAVERSION
-    });
-    const { status, stdout, stderr } = yield java.run([
-        serverConfig.serverName,
-        serverConfig.serverPort.toString(),
-        sessionConfig.userDomain,
-        sessionConfig.userName,
-        sessionConfig.password,
+    const java = new java_caller_1.JavaCaller(buildCallerOptions("cityssm.nodedocusharejava.CreateCollection"));
+    const { status, stdout, stderr } = yield java.run(buildArguments([
         parentCollectionHandleString,
-        "\"" + collectionTitle + "\""
-    ]);
-    if (status === 0) {
-        const dsOutput = JSON.parse(stdout.trim());
-        if (dsOutput.dsObjects.length > 0) {
-            return dsOutput.dsObjects[0];
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        throw new Error(stderr);
-    }
+        collectionTitle
+    ]));
+    return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
 });
 exports.createCollection = createCollection;
+const setTitle = (handleString, title) => __awaiter(void 0, void 0, void 0, function* () {
+    const java = new java_caller_1.JavaCaller(buildCallerOptions("cityssm.nodedocusharejava.SetTitle"));
+    const { status, stdout, stderr } = yield java.run(buildArguments([
+        handleString,
+        title
+    ]));
+    return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
+});
+exports.setTitle = setTitle;

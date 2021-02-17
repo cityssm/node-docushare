@@ -10,7 +10,7 @@ import com.xerox.docushare.DSObject;
 
 import ca.saultstemarie.dsjquery.DSJQuery;
 
-public class Tools {
+public class NodeDocuShareJavaUtils {
 	
 	public static JSONArray dsJQueryToJSONArray (DSJQuery ds) throws DSAuthorizationException, JSONException, DSException {
 		
