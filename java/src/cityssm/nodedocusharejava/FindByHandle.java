@@ -20,14 +20,7 @@ public class FindByHandle {
 			
 			JSONObject json = new JSONObject();
 			
-			json.put("handle", ds.handle());
-			json.put("title", ds.attr("Object.title"));
-			json.put("summary", ds.attr("Object.summary"));
-			json.put("description", ds.attr("Object.description"));
-			json.put("keywords", ds.attr("Object.keywords"));
-			json.put("create_date", ds.attr("Object.create_date"));
-			json.put("modified_date", ds.attr("Object.modified_date"));
-			json.put("expiration_date", ds.attr("Object.expiration_date"));
+			json.put("dsObjects", Tools.dsJQueryToJSONArray(ds));
 			
 			System.out.print(json.toString());
 		}

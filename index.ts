@@ -69,7 +69,7 @@ export const setupSession = (config: types.SessionConfig) => {
  * Find
  */
 
-export const findByHandle = async (handleString: string): Promise<types.DocuShareObject> => {
+export const findByHandle = async (handleString: string): Promise<types.DocuShareObject | false> => {
 
   const java = new JavaCaller({
     rootPath: JAVA_ROOTPATH,
@@ -88,8 +88,14 @@ export const findByHandle = async (handleString: string): Promise<types.DocuShar
   ]);
 
   if (status === 0) {
-    const dsObject = JSON.parse(stdout.trim()) as types.DocuShareObject;
-    return dsObject;
+    const dsOutput = JSON.parse(stdout.trim()) as types.DocuShareOutput;
+
+    if (dsOutput.dsObjects.length > 0) {
+      return dsOutput.dsObjects[0];
+    } else {
+      return false;
+    }
+
   } else {
     throw new Error(stderr);
   }
@@ -103,7 +109,7 @@ export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectC
  * Create Collection
  */
 
-export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareObject> => {
+export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareObject | false> => {
 
   const java = new JavaCaller({
     rootPath: JAVA_ROOTPATH,
@@ -123,8 +129,14 @@ export const createCollection = async (parentCollectionHandleString: string, col
   ]);
 
   if (status === 0) {
-    const dsObject = JSON.parse(stdout.trim()) as types.DocuShareObject;
-    return dsObject;
+    const dsOutput = JSON.parse(stdout.trim()) as types.DocuShareOutput;
+
+    if (dsOutput.dsObjects.length > 0) {
+      return dsOutput.dsObjects[0];
+    } else {
+      return false;
+    }
+
   } else {
     throw new Error(stderr);
   }

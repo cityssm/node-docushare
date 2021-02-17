@@ -63,8 +63,13 @@ const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, functio
         handleString
     ]);
     if (status === 0) {
-        const dsObject = JSON.parse(stdout.trim());
-        return dsObject;
+        const dsOutput = JSON.parse(stdout.trim());
+        if (dsOutput.dsObjects.length > 0) {
+            return dsOutput.dsObjects[0];
+        }
+        else {
+            return false;
+        }
     }
     else {
         throw new Error(stderr);
@@ -92,8 +97,13 @@ const createCollection = (parentCollectionHandleString, collectionTitle) => __aw
         "\"" + collectionTitle + "\""
     ]);
     if (status === 0) {
-        const dsObject = JSON.parse(stdout.trim());
-        return dsObject;
+        const dsOutput = JSON.parse(stdout.trim());
+        if (dsOutput.dsObjects.length > 0) {
+            return dsOutput.dsObjects[0];
+        }
+        else {
+            return false;
+        }
     }
     else {
         throw new Error(stderr);

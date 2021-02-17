@@ -11,12 +11,16 @@ export interface SessionConfig {
     password: string;
 }
 export declare type DocuShareObjectClass = "Collection" | "Document";
+export interface DocuShareOutput {
+    dsObjects: DocuShareObject[];
+}
 export interface DocuShareObject {
     handle: string;
     title: string;
     summary: string;
     description: string;
     keywords: string;
-    create_date: string;
-    modified_date: string;
+    createDate: string;
+    modifiedDate: string;
+    expirationDate?: string;
 }
