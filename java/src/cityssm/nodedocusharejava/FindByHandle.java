@@ -13,8 +13,7 @@ public class FindByHandle {
 	public static void main (String[] args) throws NumberFormatException, DSJQueryException, DSException, InterruptedException {
 		
 		try {
-			DSJQuerySessionHandler.serverSetup(args[0], Integer.parseInt(args[1]));
-			DSJQuerySessionHandler.sessionSetup(args[2], args[3], args[4]);
+			NodeDocuShareJavaUtils.setupConnection(args);
 			
 			DSJQuery ds = new DSJQuery("#" + args[5]);
 

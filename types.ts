@@ -13,6 +13,12 @@ export interface SessionConfig {
   password: string;
 };
 
+export interface JavaOutput {
+  status: number;
+  stdout: string;
+  stderr: string;
+}
+
 export type DocuShareObjectClass = "Collection" | "Document";
 
 export interface DocuShareOutput {

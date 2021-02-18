@@ -18,16 +18,22 @@ export const JAVA_MINIMUMJAVAVERSION = 12;
  * Java Setup
  */
 
-export const DSAPI_PATH = path.join("java", "lib", "dsapi", "dsapi.jar");
+export const JAVA_CONFIG = {
+  dsapiPath: path.join("java", "lib", "dsapi", "dsapi.jar")
+};
 
 /*
  * Server Setup
  */
 
-export const SERVER_PORT = 1099;
+export const SERVER_CONFIG = {
+  serverPort: 1099
+};
 
 /*
  * Session Setup
  */
 
-export const USER_DOMAIN = "DocuShare";
+export const SESSION_CONFIG = {
+  userDomain: "DocuShare"
+};

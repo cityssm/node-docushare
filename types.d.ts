@@ -10,6 +10,11 @@ export interface SessionConfig {
     userName: string;
     password: string;
 }
+export interface JavaOutput {
+    status: number;
+    stdout: string;
+    stderr: string;
+}
 export declare type DocuShareObjectClass = "Collection" | "Document";
 export interface DocuShareOutput {
     success: boolean;

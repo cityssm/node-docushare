@@ -1,6 +1,7 @@
 import { JavaCaller } from "java-caller";
 
 import * as defaults from "./defaults";
+import * as utils from "./utils";
 
 import type * as types from "./types";
 
@@ -11,15 +12,10 @@ import type * as types from "./types";
 
 // Java
 
-let javaConfig: types.JavaConfig = {
-  dsapiPath: defaults.DSAPI_PATH
-};
+let javaConfig: types.JavaConfig = defaults.JAVA_CONFIG;
 
 export const setupJava = (config: types.JavaConfig) => {
-  javaConfig = config;
-  if (!javaConfig.hasOwnProperty("dsapiPath")) {
-    javaConfig.dsapiPath = defaults.DSAPI_PATH;
-  }
+  javaConfig = Object.assign({}, defaults.JAVA_CONFIG, config);
 };
 
 // Server
@@ -27,10 +23,7 @@ export const setupJava = (config: types.JavaConfig) => {
 let serverConfig: types.ServerConfig;
 
 export const setupServer = (config: types.ServerConfig) => {
-  serverConfig = config;
-  if (!serverConfig.hasOwnProperty("serverPort")) {
-    serverConfig.serverPort = defaults.SERVER_PORT;
-  }
+  serverConfig = Object.assign({}, defaults.SERVER_CONFIG, config);
 };
 
 // Session
@@ -38,19 +31,16 @@ export const setupServer = (config: types.ServerConfig) => {
 let sessionConfig: types.SessionConfig;
 
 export const setupSession = (config: types.SessionConfig) => {
-  sessionConfig = config;
-  if (!sessionConfig.hasOwnProperty("userDomain")) {
-    sessionConfig.userDomain = defaults.USER_DOMAIN;
-  }
+  sessionConfig = Object.assign({}, defaults.SESSION_CONFIG, config);
 };
 
 
 /*
- * Helpers
+ * Java Helpers
  */
 
 
-const buildCallerOptions = (mainClass: string) => {
+const buildJavaCallerOptions = (mainClass: string) => {
 
   return {
     rootPath: defaults.JAVA_ROOTPATH,
@@ -60,7 +50,7 @@ const buildCallerOptions = (mainClass: string) => {
   };
 };
 
-const buildArguments = (methodArgs: string[]): string[] => {
+const buildJavaArguments = (methodArgs: string[]): string[] => {
 
   const args = [serverConfig.serverName,
   serverConfig.serverPort.toString(),
@@ -80,36 +70,17 @@ const buildArguments = (methodArgs: string[]): string[] => {
   return args;
 };
 
-const parseOutput = (status: number, stdout: string, stderr: string): types.DocuShareOutput => {
+const runJavaApplication = async (applicationClassName: string, applicationArgs: string[]): Promise<types.DocuShareOutput> => {
 
-  if (status === 0) {
-    return JSON.parse(stdout.trim()) as types.DocuShareOutput;
+  const java = new JavaCaller(
+    buildJavaCallerOptions("cityssm.nodedocusharejava." + applicationClassName)
+  );
 
-  } else {
-    throw new Error(stderr);
-  }
-};
+  const javaOutput: types.JavaOutput = await java.run(
+    buildJavaArguments(applicationArgs)
+  );
 
-const prepareSingleDocuShareObjectOutput = (status: number, stdout: string, stderr: string) => {
-
-  const dsOutput = parseOutput(status, stdout, stderr);
-
-  if (dsOutput.dsObjects.length > 0) {
-    return dsOutput.dsObjects[0];
-  } else {
-    return false;
-  }
-};
-
-const prepareMultipleDocuShareObjectsOutput = (status: number, stdout: string, stderr: string) => {
-
-  const dsOutput = parseOutput(status, stdout, stderr);
-
-  if (dsOutput.dsObjects.length > 0) {
-    return dsOutput.dsObjects;
-  } else {
-    return false;
-  }
+  return utils.parseOutput(javaOutput);
 };
 
 
@@ -120,17 +91,12 @@ const prepareMultipleDocuShareObjectsOutput = (status: number, stdout: string, s
 
 export const findByHandle = async (handleString: string): Promise<types.DocuShareObject | false> => {
 
-  const java = new JavaCaller(
-    buildCallerOptions("cityssm.nodedocusharejava.FindByHandle")
+  const dsOutput = await runJavaApplication(
+    "FindByHandle",
+    [handleString]
   );
 
-  const { status, stdout, stderr } = await java.run(
-    buildArguments([
-      handleString
-    ])
-  );
-
-  return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
+  return utils.getSingleDocuShareObjectOutput(dsOutput);
 };
 
 export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number) => {
@@ -139,17 +105,12 @@ export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectC
 
 export const getChildren = async (parentCollectionHandleString: string): Promise<types.DocuShareObject[] | false> => {
 
-  const java = new JavaCaller(
-    buildCallerOptions("cityssm.nodedocusharejava.GetChildren")
+  const dsOutput = await runJavaApplication(
+    "GetChildren",
+    [parentCollectionHandleString]
   );
 
-  const { status, stdout, stderr } = await java.run(
-    buildArguments([
-      parentCollectionHandleString
-    ])
-  );
-
-  return prepareMultipleDocuShareObjectsOutput(status, stdout, stderr);
+  return utils.getMultipleDocuShareObjectsOutput(dsOutput);
 };
 
 
@@ -160,18 +121,12 @@ export const getChildren = async (parentCollectionHandleString: string): Promise
 
 export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareObject | false> => {
 
-  const java = new JavaCaller(
-    buildCallerOptions("cityssm.nodedocusharejava.CreateCollection")
+  const dsOutput = await runJavaApplication(
+    "CreateCollection",
+    [parentCollectionHandleString, collectionTitle]
   );
 
-  const { status, stdout, stderr } = await java.run(
-    buildArguments([
-      parentCollectionHandleString,
-      collectionTitle
-    ])
-  );
-
-  return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
+  return utils.getSingleDocuShareObjectOutput(dsOutput);
 };
 
 
@@ -182,18 +137,12 @@ export const createCollection = async (parentCollectionHandleString: string, col
 
 export const setTitle = async (handleString: string, title: string) => {
 
-  const java = new JavaCaller(
-    buildCallerOptions("cityssm.nodedocusharejava.SetTitle")
+  const dsOutput = await runJavaApplication(
+    "SetTitle",
+    [handleString, title]
   );
 
-  const { status, stdout, stderr } = await java.run(
-    buildArguments([
-      handleString,
-      title
-    ])
-  );
-
-  return prepareSingleDocuShareObjectOutput(status, stdout, stderr);
+  return utils.getSingleDocuShareObjectOutput(dsOutput);
 };
 
 
@@ -201,19 +150,13 @@ export const setTitle = async (handleString: string, title: string) => {
  * Delete
  */
 
+
 export const deleteObject = async (handleString: string) => {
 
-  const java = new JavaCaller(
-    buildCallerOptions("cityssm.nodedocusharejava.DeleteObject")
+  const dsOutput = await runJavaApplication(
+    "DeleteObject",
+    [handleString]
   );
-
-  const { status, stdout, stderr } = await java.run(
-    buildArguments([
-      handleString
-    ])
-  );
-
-  const dsOutput = parseOutput(status, stdout, stderr);
 
   return dsOutput.success;
 };

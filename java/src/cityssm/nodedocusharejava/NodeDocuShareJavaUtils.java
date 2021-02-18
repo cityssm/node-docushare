@@ -9,10 +9,17 @@ import com.xerox.docushare.DSException;
 import com.xerox.docushare.DSObject;
 
 import ca.saultstemarie.dsjquery.DSJQuery;
+import ca.saultstemarie.dsjquery.DSJQueryException;
+import ca.saultstemarie.dsjquery.DSJQuerySessionHandler;
 
 public class NodeDocuShareJavaUtils {
 	
-	public static JSONArray dsJQueryToJSONArray (DSJQuery ds) throws DSAuthorizationException, JSONException, DSException {
+	public static void setupConnection (String[] args) throws NumberFormatException, DSJQueryException {
+		DSJQuerySessionHandler.serverSetup(args[0], Integer.parseInt(args[1]));
+		DSJQuerySessionHandler.sessionSetup(args[2], args[3], args[4]);
+	}
+	
+ 	public static JSONArray dsJQueryToJSONArray (DSJQuery ds) throws DSAuthorizationException, JSONException, DSException {
 		
 		JSONArray jsonArr = new JSONArray();
 		
