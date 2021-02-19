@@ -68,19 +68,25 @@ Need another function?
 [Create an issue](https://github.com/cityssm/node-docushare/issues/new)
 or submit a pull request!
 
-### Read / Create / Update
+-   `ds.findByHandle(handleString);`
 
--   `ds.findByHandle(handleString): DocuShareObject;`
+-   `ds.getChildren(parentCollectionHandleString);`
 
--   `ds.getChildren(parentCollectionHandleString): DocuShareObject[];`
+-   `ds.createCollection(parentCollectionHandleString, newTitle);`
 
--   `ds.createCollection(parentCollectionHandleString, newTitle): DocuShareObject;`
+-   `ds.setTitle(handleString, newTitle);`
 
--   `ds.setTitle(handleString, newTitle): DocuShareObject;`
+-   `ds.deleteObject(handleString): boolean;`
 
-Queries return either one of or an array of `DocuShareObject`s.
+All functions return `DocuShareOutput` objects.
 
 ```typescript
+interface DocuShareOutput {
+  success: boolean;
+  dsObjects: DocuShareObject[];
+  error?: string;
+};
+
 interface DocuShareObject {
   handle: string;
   title: string;
@@ -95,7 +101,3 @@ interface DocuShareObject {
   expirationDateMillis?: number;
 };
 ```
-
-### Delete
-
--   `ds.deleteObject(handleString): boolean;`

@@ -19,6 +19,7 @@ export declare type DocuShareObjectClass = "Collection" | "Document";
 export interface DocuShareOutput {
     success: boolean;
     dsObjects: DocuShareObject[];
+    error?: string;
 }
 export interface DocuShareObject {
     handle: string;

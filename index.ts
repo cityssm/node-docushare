@@ -80,7 +80,9 @@ const runJavaApplication = async (applicationClassName: string, applicationArgs:
     buildJavaArguments(applicationArgs)
   );
 
-  return utils.parseOutput(javaOutput);
+  const docuShareOutput = utils.parseOutput(javaOutput);
+
+  return docuShareOutput;
 };
 
 
@@ -89,28 +91,34 @@ const runJavaApplication = async (applicationClassName: string, applicationArgs:
  */
 
 
-export const findByHandle = async (handleString: string): Promise<types.DocuShareObject | false> => {
+/**
+ * Finds a single DocuShare object by a handle (i.e. "Collection-123")
+ */
+export const findByHandle = async (handleString: string): Promise<types.DocuShareOutput> => {
 
   const dsOutput = await runJavaApplication(
     "FindByHandle",
     [handleString]
   );
 
-  return utils.getSingleDocuShareObjectOutput(dsOutput);
+  return dsOutput;
 };
 
 export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number) => {
   return await findByHandle(objectClass + "-" + objectID.toString());
 };
 
-export const getChildren = async (parentCollectionHandleString: string): Promise<types.DocuShareObject[] | false> => {
+/**
+ * Retrieves the child objects of a given DocuShare Collection.
+ */
+export const getChildren = async (parentCollectionHandleString: string): Promise<types.DocuShareOutput> => {
 
   const dsOutput = await runJavaApplication(
     "GetChildren",
     [parentCollectionHandleString]
   );
 
-  return utils.getMultipleDocuShareObjectsOutput(dsOutput);
+  return dsOutput;
 };
 
 
@@ -119,14 +127,17 @@ export const getChildren = async (parentCollectionHandleString: string): Promise
  */
 
 
-export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareObject | false> => {
+/**
+ * Creates a new Collection beneath a given DocuShare Collection.
+ */
+export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareOutput> => {
 
   const dsOutput = await runJavaApplication(
     "CreateCollection",
     [parentCollectionHandleString, collectionTitle]
   );
 
-  return utils.getSingleDocuShareObjectOutput(dsOutput);
+  return dsOutput;
 };
 
 
@@ -135,14 +146,17 @@ export const createCollection = async (parentCollectionHandleString: string, col
  */
 
 
-export const setTitle = async (handleString: string, title: string) => {
+/**
+ * Updates a given DocuShare object with a new title.
+ */
+export const setTitle = async (handleString: string, title: string): Promise<types.DocuShareOutput> => {
 
   const dsOutput = await runJavaApplication(
     "SetTitle",
     [handleString, title]
   );
 
-  return utils.getSingleDocuShareObjectOutput(dsOutput);
+  return dsOutput;
 };
 
 
@@ -151,12 +165,15 @@ export const setTitle = async (handleString: string, title: string) => {
  */
 
 
-export const deleteObject = async (handleString: string) => {
+/**
+ * Removes a given DocuShare object.
+ */
+export const deleteObject = async (handleString: string): Promise<types.DocuShareOutput> => {
 
   const dsOutput = await runJavaApplication(
     "DeleteObject",
     [handleString]
   );
 
-  return dsOutput.success;
+  return dsOutput;
 };

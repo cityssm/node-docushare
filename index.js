@@ -55,11 +55,12 @@ const buildJavaArguments = (methodArgs) => {
 const runJavaApplication = (applicationClassName, applicationArgs) => __awaiter(void 0, void 0, void 0, function* () {
     const java = new java_caller_1.JavaCaller(buildJavaCallerOptions("cityssm.nodedocusharejava." + applicationClassName));
     const javaOutput = yield java.run(buildJavaArguments(applicationArgs));
-    return utils.parseOutput(javaOutput);
+    const docuShareOutput = utils.parseOutput(javaOutput);
+    return docuShareOutput;
 });
 const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
     const dsOutput = yield runJavaApplication("FindByHandle", [handleString]);
-    return utils.getSingleDocuShareObjectOutput(dsOutput);
+    return dsOutput;
 });
 exports.findByHandle = findByHandle;
 const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,21 +69,21 @@ const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void
 exports.findByObjectClassAndID = findByObjectClassAndID;
 const getChildren = (parentCollectionHandleString) => __awaiter(void 0, void 0, void 0, function* () {
     const dsOutput = yield runJavaApplication("GetChildren", [parentCollectionHandleString]);
-    return utils.getMultipleDocuShareObjectsOutput(dsOutput);
+    return dsOutput;
 });
 exports.getChildren = getChildren;
 const createCollection = (parentCollectionHandleString, collectionTitle) => __awaiter(void 0, void 0, void 0, function* () {
     const dsOutput = yield runJavaApplication("CreateCollection", [parentCollectionHandleString, collectionTitle]);
-    return utils.getSingleDocuShareObjectOutput(dsOutput);
+    return dsOutput;
 });
 exports.createCollection = createCollection;
 const setTitle = (handleString, title) => __awaiter(void 0, void 0, void 0, function* () {
     const dsOutput = yield runJavaApplication("SetTitle", [handleString, title]);
-    return utils.getSingleDocuShareObjectOutput(dsOutput);
+    return dsOutput;
 });
 exports.setTitle = setTitle;
 const deleteObject = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
     const dsOutput = yield runJavaApplication("DeleteObject", [handleString]);
-    return dsOutput.success;
+    return dsOutput;
 });
 exports.deleteObject = deleteObject;
