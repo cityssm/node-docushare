@@ -96,12 +96,10 @@ const runJavaApplication = async (applicationClassName: string, applicationArgs:
  */
 export const findByHandle = async (handleString: string): Promise<types.DocuShareOutput> => {
 
-  const dsOutput = await runJavaApplication(
+  return await runJavaApplication(
     "FindByHandle",
     [handleString]
   );
-
-  return dsOutput;
 };
 
 export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number) => {
@@ -113,12 +111,10 @@ export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectC
  */
 export const getChildren = async (parentCollectionHandleString: string): Promise<types.DocuShareOutput> => {
 
-  const dsOutput = await runJavaApplication(
+  return await runJavaApplication(
     "GetChildren",
     [parentCollectionHandleString]
   );
-
-  return dsOutput;
 };
 
 
@@ -132,12 +128,10 @@ export const getChildren = async (parentCollectionHandleString: string): Promise
  */
 export const createCollection = async (parentCollectionHandleString: string, collectionTitle: string): Promise<types.DocuShareOutput> => {
 
-  const dsOutput = await runJavaApplication(
+  return await runJavaApplication(
     "CreateCollection",
     [parentCollectionHandleString, collectionTitle]
   );
-
-  return dsOutput;
 };
 
 
@@ -151,12 +145,10 @@ export const createCollection = async (parentCollectionHandleString: string, col
  */
 export const setTitle = async (handleString: string, title: string): Promise<types.DocuShareOutput> => {
 
-  const dsOutput = await runJavaApplication(
+  return await runJavaApplication(
     "SetTitle",
     [handleString, title]
   );
-
-  return dsOutput;
 };
 
 
@@ -170,10 +162,8 @@ export const setTitle = async (handleString: string, title: string): Promise<typ
  */
 export const deleteObject = async (handleString: string): Promise<types.DocuShareOutput> => {
 
-  const dsOutput = await runJavaApplication(
+  return await runJavaApplication(
     "DeleteObject",
     [handleString]
   );
-
-  return dsOutput;
 };

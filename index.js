@@ -59,8 +59,7 @@ const runJavaApplication = (applicationClassName, applicationArgs) => __awaiter(
     return docuShareOutput;
 });
 const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
-    const dsOutput = yield runJavaApplication("FindByHandle", [handleString]);
-    return dsOutput;
+    return yield runJavaApplication("FindByHandle", [handleString]);
 });
 exports.findByHandle = findByHandle;
 const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,22 +67,18 @@ const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void
 });
 exports.findByObjectClassAndID = findByObjectClassAndID;
 const getChildren = (parentCollectionHandleString) => __awaiter(void 0, void 0, void 0, function* () {
-    const dsOutput = yield runJavaApplication("GetChildren", [parentCollectionHandleString]);
-    return dsOutput;
+    return yield runJavaApplication("GetChildren", [parentCollectionHandleString]);
 });
 exports.getChildren = getChildren;
 const createCollection = (parentCollectionHandleString, collectionTitle) => __awaiter(void 0, void 0, void 0, function* () {
-    const dsOutput = yield runJavaApplication("CreateCollection", [parentCollectionHandleString, collectionTitle]);
-    return dsOutput;
+    return yield runJavaApplication("CreateCollection", [parentCollectionHandleString, collectionTitle]);
 });
 exports.createCollection = createCollection;
 const setTitle = (handleString, title) => __awaiter(void 0, void 0, void 0, function* () {
-    const dsOutput = yield runJavaApplication("SetTitle", [handleString, title]);
-    return dsOutput;
+    return yield runJavaApplication("SetTitle", [handleString, title]);
 });
 exports.setTitle = setTitle;
 const deleteObject = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
-    const dsOutput = yield runJavaApplication("DeleteObject", [handleString]);
-    return dsOutput;
+    return yield runJavaApplication("DeleteObject", [handleString]);
 });
 exports.deleteObject = deleteObject;
