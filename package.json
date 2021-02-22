@@ -1,7 +1,7 @@
 {
   "name": "@cityssm/docushare",
   "version": "0.1.0",
-  "description": "A DocuShare API for NodeJS",
+  "description": "An unofficial DocuShare API for NodeJS",
   "main": "index.js",
   "scripts": {
     "test": "node ./test/findByHandle.js",
