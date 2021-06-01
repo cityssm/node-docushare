@@ -5,6 +5,7 @@ export declare const setupSession: (config: types.SessionConfig) => void;
 export declare const findByHandle: (handleString: string) => Promise<types.DocuShareOutput>;
 export declare const findByObjectClassAndID: (objectClass: types.DocuShareObjectClass, objectID: number) => Promise<types.DocuShareOutput>;
 export declare const getChildren: (parentCollectionHandleString: string) => Promise<types.DocuShareOutput>;
+export declare const findChildren: (parentCollectionHandleString: string, findChildrenFilters?: types.FindChildrenFilters) => Promise<types.DocuShareOutput>;
 export declare const createCollection: (parentCollectionHandleString: string, collectionTitle: string) => Promise<types.DocuShareOutput>;
 export declare const setTitle: (handleString: string, title: string) => Promise<types.DocuShareOutput>;
 export declare const deleteObject: (handleString: string) => Promise<types.DocuShareOutput>;

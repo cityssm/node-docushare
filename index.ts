@@ -1,7 +1,7 @@
 import { JavaCaller } from "java-caller";
 
-import * as defaults from "./defaults";
-import * as utils from "./utils";
+import * as defaults from "./defaults.js";
+import * as utils from "./utils.js";
 
 import type * as types from "./types";
 
@@ -115,6 +115,61 @@ export const getChildren = async (parentCollectionHandleString: string): Promise
     "GetChildren",
     [parentCollectionHandleString]
   );
+};
+
+/**
+ * Retrieves the child objects of a given DocuShare Collection
+ * filtering them by given criteria.
+ */
+export const findChildren = async (parentCollectionHandleString: string, findChildrenFilters: types.FindChildrenFilters = {}): Promise<types.DocuShareOutput> => {
+
+  const children = await getChildren(parentCollectionHandleString);
+
+  if (!children.success) {
+    return children;
+  }
+
+  // Prepare filters
+
+  for (const filterKey of Object.keys(findChildrenFilters)) {
+    findChildrenFilters[filterKey].searchString = findChildrenFilters[filterKey].searchString.trim().toLowerCase();
+    findChildrenFilters[filterKey]._searchStringSplit = findChildrenFilters[filterKey].searchString.split(" ");
+  }
+
+  children.dsObjects = children.dsObjects.filter((dsObject) => {
+
+    for (const filterKey of Object.keys(findChildrenFilters)) {
+
+      const filter: types.Filter = findChildrenFilters[filterKey];
+
+      let searchText: string;
+
+      if (filterKey === "text") {
+        searchText = (dsObject.title + " " + dsObject.summary + " " + dsObject.description).toLowerCase();
+      } else {
+        searchText = dsObject[filterKey].toLowerCase();
+      }
+
+      if (filter.searchType === "equals" && searchText !== filter.searchString) {
+        return false;
+
+      } else if (filter.searchType === "includes" && !searchText.includes(filter.searchString)) {
+        return false;
+
+      } else if (filter.searchType === "includesPieces") {
+
+        for (const searchStringPiece of filter._searchStringSplit) {
+          if (!searchText.includes(searchStringPiece)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  });
+
+  return children;
 };
 
 

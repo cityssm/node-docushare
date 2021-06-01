@@ -1,5 +1,5 @@
-import { config } from "./config";
-import * as ds from "../index";
+import { config } from "./config.js";
+import * as ds from "../index.js";
 
 async function setTitle() {
   ds.setupServer({

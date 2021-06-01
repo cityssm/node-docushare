@@ -1,10 +1,10 @@
-import * as path from "path";
+import path from "path";
 
 /*
  * Java Options
  */
 
-export const JAVA_ROOTPATH = __dirname;
+export const JAVA_ROOTPATH = ".";
 
 export const JAVA_CLASSPATH =
   path.join("java", "bin") + ":" +

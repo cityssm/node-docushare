@@ -1,7 +1,7 @@
 import { config } from "./config.js";
 import * as ds from "../index.js";
 
-async function createCollection() {
+async function findChildren() {
   ds.setupServer({
     serverName: config.serverName
   });
@@ -11,11 +11,20 @@ async function createCollection() {
     password: config.password
   });
 
-  return await ds.createCollection("Collection-400", "! Testing Testing");
+  return await ds.findChildren("Collection-400", {
+    text: {
+      searchType: "includesPieces",
+      searchString: "carpet"
+    }
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-(async() => {
-  const dsObject = await createCollection();
+(async () => {
+  console.time("findChildren");
+
+  const dsObject = await findChildren();
+
+  console.timeEnd("findChildren");
   console.log(dsObject);
 })();

@@ -1,33 +1,18 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteObject = exports.setTitle = exports.createCollection = exports.getChildren = exports.findByObjectClassAndID = exports.findByHandle = exports.setupSession = exports.setupServer = exports.setupJava = void 0;
-const java_caller_1 = require("java-caller");
-const defaults = require("./defaults");
-const utils = require("./utils");
+import { JavaCaller } from "java-caller";
+import * as defaults from "./defaults.js";
+import * as utils from "./utils.js";
 let javaConfig = defaults.JAVA_CONFIG;
-const setupJava = (config) => {
+export const setupJava = (config) => {
     javaConfig = Object.assign({}, defaults.JAVA_CONFIG, config);
 };
-exports.setupJava = setupJava;
 let serverConfig;
-const setupServer = (config) => {
+export const setupServer = (config) => {
     serverConfig = Object.assign({}, defaults.SERVER_CONFIG, config);
 };
-exports.setupServer = setupServer;
 let sessionConfig;
-const setupSession = (config) => {
+export const setupSession = (config) => {
     sessionConfig = Object.assign({}, defaults.SESSION_CONFIG, config);
 };
-exports.setupSession = setupSession;
 const buildJavaCallerOptions = (mainClass) => {
     return {
         rootPath: defaults.JAVA_ROOTPATH,
@@ -52,33 +37,64 @@ const buildJavaArguments = (methodArgs) => {
     }
     return args;
 };
-const runJavaApplication = (applicationClassName, applicationArgs) => __awaiter(void 0, void 0, void 0, function* () {
-    const java = new java_caller_1.JavaCaller(buildJavaCallerOptions("cityssm.nodedocusharejava." + applicationClassName));
-    const javaOutput = yield java.run(buildJavaArguments(applicationArgs));
+const runJavaApplication = async (applicationClassName, applicationArgs) => {
+    const java = new JavaCaller(buildJavaCallerOptions("cityssm.nodedocusharejava." + applicationClassName));
+    const javaOutput = await java.run(buildJavaArguments(applicationArgs));
     const docuShareOutput = utils.parseOutput(javaOutput);
     return docuShareOutput;
-});
-const findByHandle = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield runJavaApplication("FindByHandle", [handleString]);
-});
-exports.findByHandle = findByHandle;
-const findByObjectClassAndID = (objectClass, objectID) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield exports.findByHandle(objectClass + "-" + objectID.toString());
-});
-exports.findByObjectClassAndID = findByObjectClassAndID;
-const getChildren = (parentCollectionHandleString) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield runJavaApplication("GetChildren", [parentCollectionHandleString]);
-});
-exports.getChildren = getChildren;
-const createCollection = (parentCollectionHandleString, collectionTitle) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield runJavaApplication("CreateCollection", [parentCollectionHandleString, collectionTitle]);
-});
-exports.createCollection = createCollection;
-const setTitle = (handleString, title) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield runJavaApplication("SetTitle", [handleString, title]);
-});
-exports.setTitle = setTitle;
-const deleteObject = (handleString) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield runJavaApplication("DeleteObject", [handleString]);
-});
-exports.deleteObject = deleteObject;
+};
+export const findByHandle = async (handleString) => {
+    return await runJavaApplication("FindByHandle", [handleString]);
+};
+export const findByObjectClassAndID = async (objectClass, objectID) => {
+    return await findByHandle(objectClass + "-" + objectID.toString());
+};
+export const getChildren = async (parentCollectionHandleString) => {
+    return await runJavaApplication("GetChildren", [parentCollectionHandleString]);
+};
+export const findChildren = async (parentCollectionHandleString, findChildrenFilters = {}) => {
+    const children = await getChildren(parentCollectionHandleString);
+    if (!children.success) {
+        return children;
+    }
+    for (const filterKey of Object.keys(findChildrenFilters)) {
+        findChildrenFilters[filterKey].searchString = findChildrenFilters[filterKey].searchString.trim().toLowerCase();
+        findChildrenFilters[filterKey]._searchStringSplit = findChildrenFilters[filterKey].searchString.split(" ");
+    }
+    children.dsObjects = children.dsObjects.filter((dsObject) => {
+        for (const filterKey of Object.keys(findChildrenFilters)) {
+            const filter = findChildrenFilters[filterKey];
+            let searchText;
+            if (filterKey === "text") {
+                searchText = (dsObject.title + " " + dsObject.summary + " " + dsObject.description).toLowerCase();
+            }
+            else {
+                searchText = dsObject[filterKey].toLowerCase();
+            }
+            if (filter.searchType === "equals" && searchText !== filter.searchString) {
+                return false;
+            }
+            else if (filter.searchType === "includes" && !searchText.includes(filter.searchString)) {
+                return false;
+            }
+            else if (filter.searchType === "includesPieces") {
+                for (const searchStringPiece of filter._searchStringSplit) {
+                    if (!searchText.includes(searchStringPiece)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    });
+    return children;
+};
+export const createCollection = async (parentCollectionHandleString, collectionTitle) => {
+    return await runJavaApplication("CreateCollection", [parentCollectionHandleString, collectionTitle]);
+};
+export const setTitle = async (handleString, title) => {
+    return await runJavaApplication("SetTitle", [handleString, title]);
+};
+export const deleteObject = async (handleString) => {
+    return await runJavaApplication("DeleteObject", [handleString]);
+};

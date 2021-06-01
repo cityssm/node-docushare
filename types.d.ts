@@ -34,3 +34,13 @@ export interface DocuShareObject {
     expirationDate?: string;
     expirationDateMillis?: number;
 }
+export interface Filter {
+    searchType: "equals" | "includes" | "includesPieces";
+    searchString: string;
+    _searchStringSplit?: string[];
+}
+declare type FilterField = "text" | "handle" | "title" | "summary" | "description";
+export declare type FindChildrenFilters = {
+    [filterField in FilterField]?: Filter;
+};
+export {};

@@ -72,6 +72,8 @@ or submit a pull request!
 
 -   `ds.getChildren(parentCollectionHandleString);`
 
+-   `ds.findChildren(parentCollectionHandleString, filters);`
+
 -   `ds.createCollection(parentCollectionHandleString, newTitle);`
 
 -   `ds.setTitle(handleString, newTitle);`
