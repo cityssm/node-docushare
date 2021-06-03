@@ -16,7 +16,8 @@ export const setupSession = (config) => {
 const buildJavaCallerOptions = (mainClass) => {
     return {
         rootPath: defaults.JAVA_ROOTPATH,
-        classPath: `${defaults.JAVA_CLASSPATH}:${javaConfig.dsapiPath}`,
+        classPath: defaults.JAVA_CLASSPATH.concat([javaConfig.dsapiPath]),
+        useAbsoluteClassPaths: true,
         mainClass,
         minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
     };
