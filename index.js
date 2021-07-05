@@ -16,31 +16,31 @@ export const setupSession = (config) => {
 const buildJavaCallerOptions = (mainClass) => {
     return {
         rootPath: defaults.JAVA_ROOTPATH,
-        classPath: defaults.JAVA_CLASSPATH.concat([javaConfig.dsapiPath]),
+        classPath: [...defaults.JAVA_CLASSPATH, javaConfig.dsapiPath],
         useAbsoluteClassPaths: true,
         mainClass,
         minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
     };
 };
-const buildJavaArguments = (methodArgs) => {
-    const args = [serverConfig.serverName,
+const buildJavaArguments = (methodArguments) => {
+    const javaArguments = [serverConfig.serverName,
         serverConfig.serverPort.toString(),
         sessionConfig.userDomain,
         sessionConfig.userName,
         sessionConfig.password];
-    for (const methodArg of methodArgs) {
-        if (methodArg.includes(" ")) {
-            args.push("\"" + methodArg + "\"");
+    for (const methodArgument of methodArguments) {
+        if (methodArgument.includes(" ")) {
+            javaArguments.push("\"" + methodArgument + "\"");
         }
         else {
-            args.push(methodArg);
+            javaArguments.push(methodArgument);
         }
     }
-    return args;
+    return javaArguments;
 };
-const runJavaApplication = async (applicationClassName, applicationArgs) => {
+const runJavaApplication = async (applicationClassName, applicationArguments) => {
     const java = new JavaCaller(buildJavaCallerOptions("cityssm.nodedocusharejava." + applicationClassName));
-    const javaOutput = await java.run(buildJavaArguments(applicationArgs));
+    const javaOutput = await java.run(buildJavaArguments(applicationArguments));
     const docuShareOutput = utils.parseOutput(javaOutput);
     return docuShareOutput;
 };
@@ -65,13 +65,9 @@ export const findChildren = async (parentCollectionHandleString, findChildrenFil
     children.dsObjects = children.dsObjects.filter((dsObject) => {
         for (const filterKey of Object.keys(findChildrenFilters)) {
             const filter = findChildrenFilters[filterKey];
-            let searchText;
-            if (filterKey === "text") {
-                searchText = (dsObject.title + " " + dsObject.summary + " " + dsObject.description).toLowerCase();
-            }
-            else {
-                searchText = dsObject[filterKey].toLowerCase();
-            }
+            const searchText = filterKey === "text"
+                ? (dsObject.title + " " + dsObject.summary + " " + dsObject.description).toLowerCase()
+                : dsObject[filterKey].toLowerCase();
             if (filter.searchType === "equals" && searchText !== filter.searchString) {
                 return false;
             }

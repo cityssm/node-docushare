@@ -1,12 +1,9 @@
 export const parseOutput = (javaOutput) => {
-    if (javaOutput.status === 0) {
-        return JSON.parse(javaOutput.stdout.trim());
-    }
-    else {
-        return {
+    return javaOutput.status === 0
+        ? JSON.parse(javaOutput.stdout.trim())
+        : {
             success: false,
             dsObjects: [],
             error: javaOutput.stderr
         };
-    }
 };

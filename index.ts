@@ -14,7 +14,7 @@ import type * as types from "./types";
 
 let javaConfig: types.JavaConfig = defaults.JAVA_CONFIG;
 
-export const setupJava = (config: types.JavaConfig) => {
+export const setupJava = (config: types.JavaConfig): void => {
   javaConfig = Object.assign({}, defaults.JAVA_CONFIG, config);
 };
 
@@ -22,7 +22,7 @@ export const setupJava = (config: types.JavaConfig) => {
 
 let serverConfig: types.ServerConfig;
 
-export const setupServer = (config: types.ServerConfig) => {
+export const setupServer = (config: types.ServerConfig): void => {
   serverConfig = Object.assign({}, defaults.SERVER_CONFIG, config);
 };
 
@@ -30,7 +30,7 @@ export const setupServer = (config: types.ServerConfig) => {
 
 let sessionConfig: types.SessionConfig;
 
-export const setupSession = (config: types.SessionConfig) => {
+export const setupSession = (config: types.SessionConfig): void => {
   sessionConfig = Object.assign({}, defaults.SESSION_CONFIG, config);
 };
 
@@ -44,41 +44,41 @@ const buildJavaCallerOptions = (mainClass: string) => {
 
   return {
     rootPath: defaults.JAVA_ROOTPATH,
-    classPath: defaults.JAVA_CLASSPATH.concat([javaConfig.dsapiPath]),
+    classPath: [...defaults.JAVA_CLASSPATH, javaConfig.dsapiPath],
     useAbsoluteClassPaths: true,
     mainClass,
     minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
   };
 };
 
-const buildJavaArguments = (methodArgs: string[]): string[] => {
+const buildJavaArguments = (methodArguments: string[]): string[] => {
 
-  const args = [serverConfig.serverName,
+  const javaArguments = [serverConfig.serverName,
   serverConfig.serverPort.toString(),
   sessionConfig.userDomain,
   sessionConfig.userName,
   sessionConfig.password];
 
-  for (const methodArg of methodArgs) {
+  for (const methodArgument of methodArguments) {
 
-    if (methodArg.includes(" ")) {
-      args.push("\"" + methodArg + "\"");
+    if (methodArgument.includes(" ")) {
+      javaArguments.push("\"" + methodArgument + "\"");
     } else {
-      args.push(methodArg);
+      javaArguments.push(methodArgument);
     }
   }
 
-  return args;
+  return javaArguments;
 };
 
-const runJavaApplication = async (applicationClassName: string, applicationArgs: string[]): Promise<types.DocuShareOutput> => {
+const runJavaApplication = async (applicationClassName: string, applicationArguments: string[]): Promise<types.DocuShareOutput> => {
 
   const java = new JavaCaller(
     buildJavaCallerOptions("cityssm.nodedocusharejava." + applicationClassName)
   );
 
   const javaOutput: types.JavaOutput = await java.run(
-    buildJavaArguments(applicationArgs)
+    buildJavaArguments(applicationArguments)
   );
 
   const docuShareOutput = utils.parseOutput(javaOutput);
@@ -103,7 +103,7 @@ export const findByHandle = async (handleString: string): Promise<types.DocuShar
   );
 };
 
-export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number) => {
+export const findByObjectClassAndID = async (objectClass: types.DocuShareObjectClass, objectID: number): Promise<types.DocuShareOutput> => {
   return await findByHandle(objectClass + "-" + objectID.toString());
 };
 
@@ -143,13 +143,9 @@ export const findChildren = async (parentCollectionHandleString: string, findChi
 
       const filter: types.Filter = findChildrenFilters[filterKey];
 
-      let searchText: string;
-
-      if (filterKey === "text") {
-        searchText = (dsObject.title + " " + dsObject.summary + " " + dsObject.description).toLowerCase();
-      } else {
-        searchText = dsObject[filterKey].toLowerCase();
-      }
+      const searchText = filterKey === "text"
+        ? (dsObject.title + " " + dsObject.summary + " " + dsObject.description).toLowerCase()
+        : dsObject[filterKey].toLowerCase();
 
       if (filter.searchType === "equals" && searchText !== filter.searchString) {
         return false;

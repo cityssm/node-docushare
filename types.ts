@@ -5,13 +5,13 @@ export interface JavaConfig {
 export interface ServerConfig {
   serverName: string;
   serverPort?: number;
-};
+}
 
 export interface SessionConfig {
   userDomain?: string;
   userName: string;
   password: string;
-};
+}
 
 export interface JavaOutput {
   status: number;
@@ -25,7 +25,7 @@ export interface DocuShareOutput {
   success: boolean;
   dsObjects: DocuShareObject[];
   error?: string;
-};
+}
 
 export interface DocuShareObject {
   handle: string;
@@ -39,13 +39,13 @@ export interface DocuShareObject {
   modifiedDateMillis: number;
   expirationDate?: string;
   expirationDateMillis?: number;
-};
+}
 
 export interface Filter {
   searchType: "equals" | "includes" | "includesPieces";
   searchString: string;
   _searchStringSplit?: string[];
-};
+}
 
 type FilterField = "text" | "handle" | "title" | "summary" | "description";
 
