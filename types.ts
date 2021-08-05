@@ -1,5 +1,5 @@
 export interface JavaConfig {
-  dsapiPath: string;
+  dsapiPath: string[];
 }
 
 export interface ServerConfig {
