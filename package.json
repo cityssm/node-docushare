@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/docushare",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "An unofficial DocuShare API for NodeJS",
   "keywords": [
     "docushare",
