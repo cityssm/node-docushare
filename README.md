@@ -78,6 +78,8 @@ or submit a pull request!
 
 -   `ds.setTitle(handleString, newTitle);`
 
+-   `ds.setKeywords(handleString, newKeywords);`
+
 -   `ds.deleteObject(handleString): boolean;`
 
 All functions return `DocuShareOutput` objects.
