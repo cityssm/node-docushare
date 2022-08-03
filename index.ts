@@ -204,6 +204,18 @@ export const setTitle = async (handleString: string, title: string): Promise<typ
 };
 
 
+/**
+ * Updates a given DocuShare object with new keywords.
+ */
+ export const setKeywords = async (handleString: string, keywords: string): Promise<types.DocuShareOutput> => {
+
+  return await runJavaApplication(
+    "SetKeywords",
+    [handleString, keywords]
+  );
+};
+
+
 /*
  * Delete
  */

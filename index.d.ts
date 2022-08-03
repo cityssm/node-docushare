@@ -8,4 +8,5 @@ export declare const getChildren: (parentCollectionHandleString: string) => Prom
 export declare const findChildren: (parentCollectionHandleString: string, findChildrenFilters?: types.FindChildrenFilters) => Promise<types.DocuShareOutput>;
 export declare const createCollection: (parentCollectionHandleString: string, collectionTitle: string) => Promise<types.DocuShareOutput>;
 export declare const setTitle: (handleString: string, title: string) => Promise<types.DocuShareOutput>;
+export declare const setKeywords: (handleString: string, keywords: string) => Promise<types.DocuShareOutput>;
 export declare const deleteObject: (handleString: string) => Promise<types.DocuShareOutput>;

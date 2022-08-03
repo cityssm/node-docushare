@@ -92,6 +92,9 @@ export const createCollection = async (parentCollectionHandleString, collectionT
 export const setTitle = async (handleString, title) => {
     return await runJavaApplication("SetTitle", [handleString, title]);
 };
+export const setKeywords = async (handleString, keywords) => {
+    return await runJavaApplication("SetKeywords", [handleString, keywords]);
+};
 export const deleteObject = async (handleString) => {
     return await runJavaApplication("DeleteObject", [handleString]);
 };
