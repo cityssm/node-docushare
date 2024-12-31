@@ -1,6 +1,8 @@
 # node-docushare
 
-[![npm (scoped)](https://img.shields.io/npm/v/@cityssm/docushare)](https://www.npmjs.com/package/@cityssm/docushare) [![Codacy grade](https://img.shields.io/codacy/grade/fb0290786d3b4648a72d66363ab2fe7a)](https://app.codacy.com/gh/cityssm/node-docushare/dashboard) [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cityssm/node-docushare)](https://codeclimate.com/github/cityssm/node-docushare) [![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/cityssm/node-docushare)](https://app.snyk.io/org/cityssm/project/e2964793-ef2f-4ac8-81ba-fc345c9c3ba2)
+[![npm (scoped)](https://img.shields.io/npm/v/@cityssm/docushare)](https://www.npmjs.com/package/@cityssm/docushare)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cityssm/node-docushare)](https://codeclimate.com/github/cityssm/node-docushare)
+[![DeepSource](https://app.deepsource.com/gh/cityssm/node-docushare.svg/?label=active+issues&show_trend=true&token=V3hxZTFUSIPGJnC2QfukKK8D)](https://app.deepsource.com/gh/cityssm/node-docushare/)
 
 An unofficial DocuShare API for NodeJS, wrapped around the official Java API.
 
@@ -16,7 +18,7 @@ a Java project which simplifies the official DocuShare API.
 npm install @cityssm/docushare
 ```
 
-Node-docushare requires Java 12 or better.  If a Java 12 JRE is unavailable,
+Node-docushare requires Java 12 or better. If a Java 12 JRE is unavailable,
 one will be downloaded on first use.
 
 ### ⭐ dsapi.jar not included ⭐
@@ -32,33 +34,32 @@ dsapi.jar files are available for free through the
 ## Getting Started
 
 ```javascript
-import * as ds from "@cityssm/docushare";
+import { DocuShareAPI } from '@cityssm/docushare'
 
-/*
- * Set Up Connection
- */
-
-ds.setupJava({
-  dsapiPath: path.join("..", "..", "..", "java", "dsapi.jar")
-});
-
-ds.setupServer({
-  serverName: "dsServer.local"
-});
-
-ds.setupSession({
-  userName: "userName",
-  password: "p@ssword1"
-});
+const docuShareAPI = new DocuShareAPI({
+  server: {
+    serverName: 'dsServer.local'
+  },
+  session: {
+    userName: 'userName',
+    password: 'p@ssword1'
+  },
+  java: {
+    dsapiPath: path.join('..', '..', '..', 'java', 'dsapi.jar')
+  }
+})
 
 // Get a Collection
-const dsCollection = await ds.findByHandle("Collection-100");
+const dsCollection = await docuShareAPI.findByHandle('Collection-100')
 
 // Get the child objects of a Collection
-const dsObjects = await ds.getChildren("Collection-101");
+const dsObjects = await docuShareAPI.getChildren('Collection-101')
 
 // Create a new Collection beneath a Collection
-const childCollection = await ds.createCollection("Collection-102", "New Collection Name");
+const childCollection = await docuShareAPI.createCollection(
+  'Collection-102',
+  'New Collection Name'
+)
 ```
 
 ## Functions
@@ -68,40 +69,40 @@ Need another function?
 [Create an issue](https://github.com/cityssm/node-docushare/issues/new)
 or submit a pull request!
 
--   `ds.findByHandle(handleString);`
+- `findByHandle(handleString);`
 
--   `ds.getChildren(parentCollectionHandleString);`
+- `getChildren(parentCollectionHandleString);`
 
--   `ds.findChildren(parentCollectionHandleString, filters);`
+- `findChildren(parentCollectionHandleString, filters);`
 
--   `ds.createCollection(parentCollectionHandleString, newTitle);`
+- `createCollection(parentCollectionHandleString, newTitle);`
 
--   `ds.setTitle(handleString, newTitle);`
+- `setTitle(handleString, newTitle);`
 
--   `ds.setKeywords(handleString, newKeywords);`
+- `setKeywords(handleString, newKeywords);`
 
--   `ds.deleteObject(handleString): boolean;`
+- `deleteObject(handleString): boolean;`
 
 All functions return `DocuShareOutput` objects.
 
 ```typescript
 interface DocuShareOutput {
-  success: boolean;
-  dsObjects: DocuShareObject[];
-  error?: string;
-};
+  success: boolean
+  dsObjects: DocuShareObject[]
+  error?: string
+}
 
 interface DocuShareObject {
-  handle: string;
-  title: string;
-  summary: string;
-  description: string;
-  keywords: string;
-  createDate: string;
-  createDateMillis: number;
-  modifiedDate: string;
-  modifiedDateMillis: number;
-  expirationDate?: string;
-  expirationDateMillis?: number;
-};
+  handle: string
+  title: string
+  summary: string
+  description: string
+  keywords: string
+  createDate: string
+  createDateMillis: number
+  modifiedDate: string
+  modifiedDateMillis: number
+  expirationDate?: string
+  expirationDateMillis?: number
+}
 ```

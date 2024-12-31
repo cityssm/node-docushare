@@ -1,2 +1,2 @@
-import type * as types from "./types";
-export declare const parseOutput: (javaOutput: types.JavaOutput) => types.DocuShareOutput;
+import type * as types from './types.js';
+export declare function parseOutput(javaOutput: types.JavaOutput): types.DocuShareOutput;

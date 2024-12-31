@@ -15,7 +15,7 @@ export interface JavaOutput {
     stdout: string;
     stderr: string;
 }
-export declare type DocuShareObjectClass = "Collection" | "Document";
+export type DocuShareObjectClass = 'Collection' | 'Document';
 export interface DocuShareOutput {
     success: boolean;
     dsObjects: DocuShareObject[];
@@ -35,12 +35,10 @@ export interface DocuShareObject {
     expirationDateMillis?: number;
 }
 export interface Filter {
-    searchType: "equals" | "includes" | "includesPieces";
+    searchType: 'equals' | 'includes' | 'includesPieces';
     searchString: string;
     _searchStringSplit?: string[];
 }
-declare type FilterField = "text" | "handle" | "title" | "summary" | "description";
-export declare type FindChildrenFilters = {
-    [filterField in FilterField]?: Filter;
-};
+type FilterField = 'text' | 'handle' | 'title' | 'summary' | 'description';
+export type FindChildrenFilters = Partial<Record<FilterField, Filter>>;
 export {};

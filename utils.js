@@ -1,4 +1,4 @@
-export const parseOutput = (javaOutput) => {
+export function parseOutput(javaOutput) {
     return javaOutput.status === 0
         ? JSON.parse(javaOutput.stdout.trim())
         : {
@@ -6,4 +6,4 @@ export const parseOutput = (javaOutput) => {
             dsObjects: [],
             error: javaOutput.stderr
         };
-};
+}

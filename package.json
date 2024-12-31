@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/docushare",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "description": "An unofficial DocuShare API for NodeJS",
   "keywords": [
     "docushare",
@@ -19,25 +19,19 @@
   "author": "The Corporation of the City of Sault Ste. Marie",
   "type": "module",
   "exports": "./index.js",
-  "types": "./index.d.ts",
   "scripts": {
-    "test": "node ./test/findByHandle.js",
-    "test:getChildren": "node ./test/getChildren.js",
-    "test:findChildren": "node ./test/findChildren.js",
-    "test:setTitle": "node ./test/setTitle.js",
-    "test:deleteObject": "node ./test/deleteObject.js"
+    "test:findChildren": "cross-env NODE_ENV=dev DEBUG=docushare-api:* node --test \"test/findChildren.test.js\"",
+    "test:findByHandle": "cross-env NODE_ENV=dev DEBUG=docushare-api:* node --test \"test/findByHandle.test.js\"",
+    "test:getChildren": "cross-env NODE_ENV=dev DEBUG=docushare-api:* node --test \"test/getChildren.test.js\""
   },
   "dependencies": {
-    "java-caller": "^2.4.0"
+    "debug": "^4.4.0",
+    "java-caller": "^4.1.1"
   },
   "devDependencies": {
-    "@types/node": "^16.9.1",
-    "@typescript-eslint/eslint-plugin": "^4.31.0",
-    "@typescript-eslint/parser": "^4.31.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-unicorn": "^35.0.0"
+    "@types/debug": "^4.1.12",
+    "@types/node": "^22.10.2",
+    "eslint-config-cityssm": "^18.3.0",
+    "prettier-config-cityssm": "^1.0.0"
   }
 }

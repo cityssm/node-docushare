@@ -1,13 +1,13 @@
-import type * as types from "./types";
+import type * as types from './types.js'
 
-
-export const parseOutput = (javaOutput: types.JavaOutput): types.DocuShareOutput => {
-
+export function parseOutput(
+  javaOutput: types.JavaOutput
+): types.DocuShareOutput {
   return javaOutput.status === 0
-    ? JSON.parse(javaOutput.stdout.trim()) as types.DocuShareOutput
+    ? (JSON.parse(javaOutput.stdout.trim()) as types.DocuShareOutput)
     : {
-      success: false,
-      dsObjects: [],
-      error: javaOutput.stderr
-    };
-};
+        success: false,
+        dsObjects: [],
+        error: javaOutput.stderr
+      }
+}
