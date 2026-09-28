@@ -3,17 +3,16 @@ import { JavaCaller } from 'java-caller'
 
 import * as defaults from './defaults.js'
 import type * as types from './types.js'
-import * as utils from './utils.js'
+import utilities from './utilities.js'
 
 interface JavaCallerOptions {
-  rootPath: string
-  classPath: string[] | string
-  useAbsoluteClassPaths: boolean
+  classPath: string | string[]
   mainClass: string
   minimumJavaVersion: number
+  rootPath: string
+  useAbsoluteClassPaths: boolean
 }
 
-// eslint-disable-next-line @cspell/spellchecker
 const debug = Debug('docushare-api:index')
 
 export class DocuShareAPI {
@@ -27,83 +26,43 @@ export class DocuShareAPI {
     session: types.SessionConfig
   }) {
     if (configs.java !== undefined) {
-      this.#javaConfig = Object.assign({}, defaults.JAVA_CONFIG, configs.java)
+      this.#javaConfig = { ...defaults.JAVA_CONFIG, ...configs.java }
     }
 
-    this.#serverConfig = Object.assign(
-      {},
-      defaults.SERVER_CONFIG,
-      configs.server
-    )
+    this.#serverConfig = {
+      ...defaults.SERVER_CONFIG,
+      ...configs.server
+    }
 
-    this.#sessionConfig = Object.assign(
-      {},
-      defaults.SESSION_CONFIG,
-      configs.session
-    )
-  }
-
-  #buildJavaCallerOptions(mainClass: string): JavaCallerOptions {
-    const classPathList = [
-      ...defaults.JAVA_CLASSPATH,
-      ...this.#javaConfig.dsapiPath
-    ]
-
-    return {
-      rootPath: defaults.JAVA_ROOTPATH,
-      classPath:
-        process.platform === 'win32'
-          ? `"${classPathList.join(';')}"`
-          : classPathList,
-      useAbsoluteClassPaths: true,
-      mainClass,
-      minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
+    this.#sessionConfig = {
+      ...defaults.SESSION_CONFIG,
+      ...configs.session
     }
   }
 
-  #buildJavaArguments(methodArguments: string[]): string[] {
-    const javaArguments = [
-      this.#serverConfig.serverName,
-      (
-        this.#serverConfig.serverPort ?? defaults.SERVER_CONFIG.serverPort
-      ).toString(),
-      this.#sessionConfig.userDomain ?? '',
-      this.#sessionConfig.userName,
-      this.#sessionConfig.password
-    ]
-
-    for (const methodArgument of methodArguments) {
-      if (methodArgument.includes(' ')) {
-        javaArguments.push('"' + methodArgument + '"')
-      } else {
-        javaArguments.push(methodArgument)
-      }
-    }
-
-    return javaArguments
-  }
-
-  async #runJavaApplication(
-    applicationClassName: string,
-    applicationArguments: string[]
+  /**
+   * Creates a new Collection beneath a given DocuShare Collection.
+   * @param parentCollectionHandleString - The handle of the parent collection.
+   * @param collectionTitle - The title of the new collection.
+   * @returns The new Collection object.
+   */
+  async createCollection(
+    parentCollectionHandleString: string,
+    collectionTitle: string
   ): Promise<types.DocuShareOutput> {
-    const callerOptions = this.#buildJavaCallerOptions(
-      `cityssm.nodedocusharejava.${applicationClassName}`
-    )
+    return await this.#runJavaApplication('CreateCollection', [
+      parentCollectionHandleString,
+      collectionTitle
+    ])
+  }
 
-    debug('Java Caller Options:', callerOptions)
-
-    const java = new JavaCaller(callerOptions)
-
-    const javaOutput: types.JavaOutput = await java.run(
-      this.#buildJavaArguments(applicationArguments)
-    )
-
-    // debug('Java Output:', javaOutput)
-
-    const docuShareOutput = utils.parseOutput(javaOutput)
-
-    return docuShareOutput
+  /**
+   * Removes a given DocuShare object.
+   * @param handleString - The handle of the object to delete.
+   * @returns Whether the object was successfully deleted.
+   */
+  async deleteObject(handleString: string): Promise<types.DocuShareOutput> {
+    return await this.#runJavaApplication('DeleteObject', [handleString])
   }
 
   /**
@@ -119,20 +78,7 @@ export class DocuShareAPI {
     objectClass: types.DocuShareObjectClass,
     objectID: number
   ): Promise<types.DocuShareOutput> {
-    return await this.findByHandle(objectClass + '-' + objectID.toString())
-  }
-
-  /**
-   * Retrieves the child objects of a given DocuShare Collection.
-   * @param parentCollectionHandleString - The handle of the parent collection.
-   * @returns The child objects of the parent collection.
-   */
-  async getChildren(
-    parentCollectionHandleString: string
-  ): Promise<types.DocuShareOutput> {
-    return await this.#runJavaApplication('GetChildren', [
-      parentCollectionHandleString
-    ])
+    return await this.findByHandle(`${objectClass}-${objectID.toString()}`)
   }
 
   /**
@@ -153,6 +99,7 @@ export class DocuShareAPI {
     }
 
     // Prepare filters
+    // eslint-disable-next-line unicorn/prefer-object-iterable-methods
     for (const filterKey of Object.keys(findChildrenFilters)) {
       findChildrenFilters[filterKey].searchString = findChildrenFilters[
         filterKey
@@ -169,13 +116,9 @@ export class DocuShareAPI {
 
         const searchText =
           filterKey === 'text'
-            ? (
-                dsObject.title +
-                ' ' +
-                dsObject.summary +
-                ' ' +
+            ? `${dsObject.title} ${dsObject.summary} ${
                 dsObject.description
-              ).toLowerCase()
+              }`.toLowerCase()
             : dsObject[filterKey].toLowerCase()
 
         if (
@@ -183,12 +126,19 @@ export class DocuShareAPI {
           searchText !== filter.searchString
         ) {
           return false
-        } else if (
+        }
+
+        if (
           filter.searchType === 'includes' &&
           !searchText.includes(filter.searchString)
         ) {
           return false
-        } else if (filter.searchType === 'includesPieces') {
+        }
+
+        if (
+          filter.searchType === 'includesPieces' &&
+          filter._searchStringSplit?.length
+        ) {
           for (const searchStringPiece of filter._searchStringSplit) {
             if (!searchText.includes(searchStringPiece)) {
               return false
@@ -204,32 +154,16 @@ export class DocuShareAPI {
   }
 
   /**
-   * Creates a new Collection beneath a given DocuShare Collection.
+   * Retrieves the child objects of a given DocuShare Collection.
    * @param parentCollectionHandleString - The handle of the parent collection.
-   * @param collectionTitle - The title of the new collection.
-   * @returns The new Collection object.
+   * @returns The child objects of the parent collection.
    */
-  async createCollection(
-    parentCollectionHandleString: string,
-    collectionTitle: string
+  async getChildren(
+    parentCollectionHandleString: string
   ): Promise<types.DocuShareOutput> {
-    return await this.#runJavaApplication('CreateCollection', [
-      parentCollectionHandleString,
-      collectionTitle
+    return await this.#runJavaApplication('GetChildren', [
+      parentCollectionHandleString
     ])
-  }
-
-  /**
-   * Updates a given DocuShare object with a new title.
-   * @param handleString - The handle of the object to update.
-   * @param title - The new title of the object.
-   * @returns The updated DocuShare object.
-   */
-  async setTitle(
-    handleString: string,
-    title: string
-  ): Promise<types.DocuShareOutput> {
-    return await this.#runJavaApplication('SetTitle', [handleString, title])
   }
 
   /**
@@ -249,11 +183,73 @@ export class DocuShareAPI {
   }
 
   /**
-   * Removes a given DocuShare object.
-   * @param handleString - The handle of the object to delete.
-   * @returns Whether the object was successfully deleted.
+   * Updates a given DocuShare object with a new title.
+   * @param handleString - The handle of the object to update.
+   * @param title - The new title of the object.
+   * @returns The updated DocuShare object.
    */
-  async deleteObject(handleString: string): Promise<types.DocuShareOutput> {
-    return await this.#runJavaApplication('DeleteObject', [handleString])
+  async setTitle(
+    handleString: string,
+    title: string
+  ): Promise<types.DocuShareOutput> {
+    return await this.#runJavaApplication('SetTitle', [handleString, title])
+  }
+
+  #buildJavaArguments(methodArguments: string[]): string[] {
+    const javaArguments = [
+      this.#serverConfig.serverName,
+      (
+        this.#serverConfig.serverPort ?? defaults.SERVER_CONFIG.serverPort
+      ).toString(),
+      this.#sessionConfig.userDomain ?? '',
+      this.#sessionConfig.userName,
+      this.#sessionConfig.password
+    ]
+
+    for (const methodArgument of methodArguments) {
+      if (methodArgument.includes(' ')) {
+        javaArguments.push(`"${methodArgument}"`)
+      } else {
+        javaArguments.push(methodArgument)
+      }
+    }
+
+    return javaArguments
+  }
+
+  #buildJavaCallerOptions(mainClass: string): JavaCallerOptions {
+    const classPathList = [
+      ...defaults.JAVA_CLASSPATH,
+      ...this.#javaConfig.dsapiPath
+    ]
+
+    return {
+      rootPath: defaults.JAVA_ROOTPATH,
+      classPath: classPathList,
+      useAbsoluteClassPaths: true,
+      mainClass,
+      minimumJavaVersion: defaults.JAVA_MINIMUMJAVAVERSION
+    }
+  }
+
+  async #runJavaApplication(
+    appClassName: string,
+    appArguments: string[]
+  ): Promise<types.DocuShareOutput> {
+    const callerOptions = this.#buildJavaCallerOptions(
+      `cityssm.nodedocusharejava.${appClassName}`
+    )
+
+    debug('Java Caller Options:', callerOptions)
+
+    const java = new JavaCaller(callerOptions)
+
+    const javaOutput = await java.run(this.#buildJavaArguments(appArguments))
+
+    // debug('Java Output:', javaOutput)
+
+    const docuShareOutput = utilities.parseOutput(javaOutput)
+
+    return docuShareOutput
   }
 }

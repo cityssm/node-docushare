@@ -1,3 +1,5 @@
+/* eslint-disable node-test/no-async-describe */
+/* eslint-disable no-console */
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { DocuShareAPI } from '../index.js';
@@ -21,6 +23,6 @@ await describe('findChildren', async () => {
         });
         console.log(dsObject);
         assert.strictEqual(dsObject.success, true);
-        assert(dsObject.dsObjects.length > 0);
+        assert.ok(dsObject.dsObjects.length > 0);
     });
 });

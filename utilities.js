@@ -7,3 +7,6 @@ export function parseOutput(javaOutput) {
             error: javaOutput.stderr
         };
 }
+export default {
+    parseOutput
+};

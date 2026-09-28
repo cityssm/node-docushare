@@ -39,6 +39,6 @@ export interface Filter {
     searchString: string;
     _searchStringSplit?: string[];
 }
-type FilterField = 'text' | 'handle' | 'title' | 'summary' | 'description';
+type FilterField = 'description' | 'handle' | 'summary' | 'text' | 'title';
 export type FindChildrenFilters = Partial<Record<FilterField, Filter>>;
 export {};

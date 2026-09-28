@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/docushare",
-  "version": "2.0.0-beta",
+  "version": "2.0.0",
   "description": "An unofficial DocuShare API for NodeJS",
   "keywords": [
     "docushare",
@@ -17,21 +17,34 @@
   },
   "license": "MIT",
   "author": "The Corporation of the City of Sault Ste. Marie",
+  "sideEffects": false,
   "type": "module",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "java/bin/*",
+    "java/lib/dsJQuery/*",
+    "java/lib/jdom/*",
+    "java/lib/json/*",
+    "defaults.*",
+    "index.*",
+    "types.*",
+    "utilities.*"
+  ],
   "scripts": {
-    "test:findChildren": "cross-env NODE_ENV=dev DEBUG=docushare-api:* node --test \"test/findChildren.test.js\"",
-    "test:findByHandle": "cross-env NODE_ENV=dev DEBUG=docushare-api:* node --test \"test/findByHandle.test.js\"",
-    "test:getChildren": "cross-env NODE_ENV=dev DEBUG=docushare-api:* node --test \"test/getChildren.test.js\""
+    "test:findByHandle": "node --env-file=.dev.env --test \"test/findByHandle.test.js\"",
+    "test:findChildren": "node --env-file=.dev.env --test \"test/findChildren.test.js\"",
+    "test:getChildren": "node --env-file=.dev.env --test \"test/getChildren.test.js\""
   },
   "dependencies": {
-    "debug": "^4.4.0",
-    "java-caller": "^4.1.1"
+    "debug": "^4.4.3",
+    "java-caller": "^6.0.0"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.12",
-    "@types/node": "^22.10.2",
-    "eslint-config-cityssm": "^18.3.0",
-    "prettier-config-cityssm": "^1.0.0"
+    "@types/debug": "^4.1.13",
+    "@types/node": "^26.6.3",
+    "eslint-config-cityssm": "^54.1.0",
+    "prettier-config-cityssm": "^2.2.0"
   }
 }
