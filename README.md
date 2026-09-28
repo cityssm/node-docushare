@@ -1,7 +1,6 @@
 # node-docushare
 
 [![npm (scoped)](https://img.shields.io/npm/v/@cityssm/docushare)](https://www.npmjs.com/package/@cityssm/docushare)
-[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cityssm/node-docushare)](https://codeclimate.com/github/cityssm/node-docushare)
 [![DeepSource](https://app.deepsource.com/gh/cityssm/node-docushare.svg/?label=active+issues&show_trend=true&token=V3hxZTFUSIPGJnC2QfukKK8D)](https://app.deepsource.com/gh/cityssm/node-docushare/)
 
 An unofficial DocuShare API for NodeJS, wrapped around the official Java API.

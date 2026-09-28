@@ -1,15 +1,9 @@
 {
-    "version": "0.2",
-    "ignorePaths": [],
-    "dictionaryDefinitions": [],
-    "dictionaries": [],
-    "words": [
-        "cityssm",
-        "docushare",
-        "dsapi",
-        "jdom",
-        "nodedocusharejava"
-    ],
-    "ignoreWords": [],
-    "import": []
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": ["cityssm", "docushare", "dsapi", "jdom", "nodedocusharejava"],
+  "ignoreWords": [],
+  "import": []
 }
