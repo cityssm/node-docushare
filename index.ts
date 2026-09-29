@@ -253,3 +253,5 @@ export class DocuShareAPI {
     return docuShareOutput
   }
 }
+
+export type * from './types.js'

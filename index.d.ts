@@ -55,3 +55,4 @@ export declare class DocuShareAPI {
      */
     setTitle(handleString: string, title: string): Promise<types.DocuShareOutput>;
 }
+export type * from './types.js';
